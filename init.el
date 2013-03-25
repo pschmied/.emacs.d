@@ -51,6 +51,10 @@
 ;; Twilight theme enable
 (load-theme 'twilight t)
 
+;; Default font
+(when (eq system-type 'darwin)
+  (set-face-attribute 'default nil :family "Source Code Pro" :height 130))
+
 ;; Set emacs default window size
 (defun set-frame-size-according-to-resolution ()
   (interactive)
@@ -67,7 +71,7 @@
     ;; whatnot), then divide by the height of a char to
     ;; get the height we want
     (add-to-list 'default-frame-alist
-         (cons 'height (/ (- (x-display-pixel-height) 75)
+         (cons 'height (/ (- (x-display-pixel-height) 55)
                              (frame-char-height)))))))
 
 (set-frame-size-according-to-resolution)
@@ -124,3 +128,7 @@
 
 ;; python
 ;(setq python-shell-interpreter "/usr/bin/python")
+
+
+
+
