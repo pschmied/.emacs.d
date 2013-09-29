@@ -36,7 +36,10 @@
                       twilight-theme
                       markdown-mode
                       markdown-mode+
-                      pandoc-mode)
+                      pandoc-mode
+                      auctex
+                      haskell-mode
+                      scion)
   "A list of packages to ensure are installed at launch.")
 
 
@@ -86,7 +89,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(TeX-engine (quote luatex))
- '(custom-safe-themes (quote ("6cfe5b2f818c7b52723f3e121d1157cf9d95ed8923dbc1b47f392da80ef7495d" default))))
+ '(custom-safe-themes (quote ("6cfe5b2f818c7b52723f3e121d1157cf9d95ed8923dbc1b47f392da80ef7495d" default)))
+ '(sql-sqlite-program "/usr/local/bin/spatialite"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -106,7 +110,7 @@
 
 ;; SLIME
 ;;(load (expand-file-name "~/quicklisp/slime-helper.el"))
-;;(setq inferior-lisp-program "ccl64")
+(setq inferior-lisp-program "sbcl")
 
 ;; Paths, because they're broken on OS X
 (when (memq window-system '(mac ns))
@@ -118,17 +122,15 @@
 
 (add-hook 'clojure-mode-hook 'paredit-mode)
 
-;; (add-hook 'nrepl-interaction-mode-hook
-;;           'nrepl-turn-on-eldoc-mode)
-
-;; ;; bug fix workaround for nrepl-interaction-mode
-;; (setq nrepl-connected-hook (reverse nrepl-connected-hook))
-;; ;; Suppress incessant error buffer with nrepl
-;; (setq nrepl-popup-stacktraces nil)
-
-;; python
-;(setq python-shell-interpreter "/usr/bin/python")
-
-
-
-
+;; Python - Note: configuration assumes ipython is installed
+(setq
+ python-shell-interpreter "ipython"
+ python-shell-interpreter-args ""
+ python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+ python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+ python-shell-completion-setup-code
+   "from IPython.core.completerlib import module_completion"
+ python-shell-completion-module-string-code
+   "';'.join(module_completion('''%s'''))\n"
+ python-shell-completion-string-code
+   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
