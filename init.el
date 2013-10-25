@@ -27,12 +27,11 @@
                       guru-mode
                       paredit
                       ess
+                      cider
                       clojure-mode
                       clojure-test-mode
                       paredit
-                      nrepl
                       auto-complete
-                      ac-nrepl
                       twilight-theme
                       markdown-mode
                       markdown-mode+
