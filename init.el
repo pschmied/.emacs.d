@@ -20,8 +20,7 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defvar my-packages '(melpa
-                      exec-path-from-shell
+(defvar my-packages '(exec-path-from-shell
                       starter-kit
                       starter-kit-bindings
                       guru-mode
@@ -51,6 +50,7 @@
 (require 'guru-mode)
 
 ;; Twilight theme enable
+
 (load-theme 'twilight t)
 
 ;; Default font
