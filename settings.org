@@ -1,0 +1,342 @@
+#+TITLE: Literate Emacs Configuration
+#+AUTHOR: Peter Schmiedeskamp
+#+EMAIL: peter@thoughtspot.net
+
+* Overview
+This document serves as my primary emacs configuration file; it uses
+[[http://orgmode.org/worg/org-contrib/babel/][org-babel]] to mix documentation and code in the same file. I chose this
+approach because my ~init.el~ file was beginning to get large and
+unweildy, and because I was starting to forget the details of why and
+how I had configured things.
+
+This document hasn't entirely done away with ~init.el~. The version of
+that file included in this repository is a stub, with only the bare
+minimum code required to bootstrap a recent org-mode. Please consult
+that file for more detail, but the boostrap:
+
+1. Starts the emacs server
+2. Sets up emacs to pull from the [[http://melpa.org][Melpa package repository]]
+3. Installs a new org-mode if it isn't already installed
+4. Loads org-mode
+5. Loads this file
+
+Installation of these configuration files is simple. If you're not me,
+ I recommend [[https://help.github.com/articles/fork-a-repo/][forking this repository]] before cloning it to your home
+ directory.
+
+* Install packages at startup if needed
+
+#+BEGIN_SRC emacs-lisp
+  (defvar my-packages '(exec-path-from-shell
+                        paredit
+                        ess
+                        auto-complete
+                        twilight-theme
+                        markdown-mode
+                        markdown-mode+
+                        auctex
+                        haskell-mode
+                        scion
+                        pandoc-mode
+                        ox-pandoc
+                        polymode)
+    "A list of packages to ensure are installed at launch.")
+
+  ;; Iterate list of packages and install
+  (dolist (p my-packages)
+    (when (not (package-installed-p p))
+      (package-install p)))
+#+END_SRC
+
+* OSX path fix
+OSX paths have been broken on and off due to the way profile
+information is stored both in Apple netinfo database as well as in the
+more traditional locations. This makes things sane again.
+
+#+BEGIN_SRC emacs-lisp
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+#+END_SRC
+
+* Aesthetics and behaviors
+** Color theme
+I tend to prefer light, high-contrast color themes to the more
+hacker-chic low contrast dark themes. The built-in Emacs theme is
+pretty good, but leuven is better and is particularly nice with
+org-mode. Twilight is my favorite when wallowing in darkness. I've
+also been known to dabble in solarized for Solaris nostalgia reasons.
+
+#+BEGIN_SRC emacs-lisp
+  ;; Pick a theme. Choose wisely.
+  (load-theme 'leuven t)                 ; leuven is light
+  ;; (load-theme 'twilight t)               ; twilight is dark
+#+END_SRC
+
+** Default font
+I like =Source Code Pro= for my monospaced font. The easiest way to
+get this via homebrew cask (don't forget to ~brew tap caskroom/fonts~
+before installing).
+
+#+BEGIN_SRC emacs-lisp
+;; Default font
+(set-face-attribute 'default nil :family "Source Code Pro" :height 130)
+#+END_SRC
+
+** Default window size
+I tend to use a tiling window manager these days, so this is less
+important to me than it used to be. Otherwise, this will intelligently
+set a sane window size.
+
+#+BEGIN_SRC emacs-lisp
+(defun set-frame-size-according-to-resolution ()
+  (interactive)
+  (if (display-graphic-p)
+  (progn
+    ;; use 120 char wide window for largeish displays
+    ;; and smaller 80 column windows for smaller displays
+    ;; pick whatever numbers make sense for you
+    (if (> (x-display-pixel-width) 1920)
+           (add-to-list 'default-frame-alist (cons 'width 120))
+           (add-to-list 'default-frame-alist (cons 'width 80)))
+    ;; for the height, subtract a couple hundred pixels
+    ;; from the screen height (for panels, menubars and
+    ;; whatnot), then divide by the height of a char to
+    ;; get the height we want
+    (add-to-list 'default-frame-alist
+         (cons 'height (/ (- (x-display-pixel-height) 55)
+                             (frame-char-height)))))))
+
+(set-frame-size-according-to-resolution)
+#+END_SRC
+
+** Hide the menubar
+
+#+BEGIN_SRC emacs-lisp
+(menu-bar-mode 1)
+#+END_SRC
+
+** Silence the audible bell
+
+#+BEGIN_SRC emacs-lisp
+(setq ring-bell-function 'ignore)
+#+END_SRC
+
+** Line overlap when paging up and down screens
+
+#+BEGIN_SRC emacs-lisp
+(setq next-screen-context-lines 4)
+#+END_SRC
+
+** Mouse scrolling
+#+BEGIN_SRC emacs-lisp
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ; one line at a time
+  (setq mouse-wheel-progressive-speed nil) ; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't)       ; scroll window under mouse
+  (setq scroll-step 1)              ; keyboard scroll one line at a time
+#+END_SRC
+
+** Spell-checking
+Aspell seems to be the best here. Homebrew install with ~brew install
+--with-lang-en~ for English speakers.
+#+BEGIN_SRC emacs-lisp
+(if (file-exists-p "/usr/local/bin/aspell")
+    (progn
+      (setq ispell-program-name "aspell")
+      (eval-after-load "ispell"
+        '(progn (defun ispell-get-coding-system () 'utf-8)))))
+#+END_SRC
+* Auto-completions and miscellaneous conveniences
+** Recent file list
+#+BEGIN_SRC emacs-lisp
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 50)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
+#+END_SRC
+
+** Function to insert a date
+#+BEGIN_SRC emacs-lisp
+(defun esk-insert-date ()
+  "Insert a time-stamp according to locale's date and time format."
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d" (current-time))))
+#+END_SRC
+
+
+
+
+* Org-mode / org-babel setup
+
+#+BEGIN_SRC emacs-lisp
+;; active Org Babel languages
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((R . t)
+   (emacs-lisp . t)
+   ;(julia . t)
+   (sh . t)
+   (latex . t)
+   (python . t)
+   (sql . t)
+   (sqlite . t)))
+
+;; Org babel inline images
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)   
+(add-hook 'org-mode-hook 'org-display-inline-images)
+#+END_SRC
+
+
+
+* ESS - Emacs Speaks Statistics (R, Julia)
+#+BEGIN_SRC emacs-lisp
+(require 'ess-site) ; load the package
+#+END_SRC
+** R
+R works out of the box. Yay!
+
+** Julia
+#+BEGIN_SRC emacs-lisp
+(setq inferior-julia-program-name "/opt/homebrew-cask/Caskroom/julia/0.3.2/Julia-0.3.2.app/Contents/Resources/julia/bin/julia")
+#+END_SRC
+
+* Python
+This configuration assumes ipython is installed. This should probably
+be revisited, as its been a while since I've looked into the "right"
+way of doing things.
+
+#+BEGIN_SRC emacs-lisp
+(setq
+ python-shell-interpreter "ipython"
+ python-shell-interpreter-args ""
+ python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+ python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+ python-shell-completion-setup-code
+   "from IPython.core.completerlib import module_completion"
+ python-shell-completion-module-string-code
+   "';'.join(module_completion('''%s'''))\n"
+ python-shell-completion-string-code
+   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+#+END_SRC
+
+* LaTeX / AucTeX
+#+BEGIN_SRC emacs-lisp
+(add-hook 'LaTeX-mode-hook 'visual-line-mode)
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+(add-hook 'LaTeX-mode-hook 'orgtbl-mode)
+;; Compile LaTeX to PDF by default
+(add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "LaTeXmk")))
+(add-hook 'LaTeX-mode-hook '(lambda () (setq compile-command "latexmk -pdf")))
+#+END_SRC
+* TODO Email (split into non-monolithic, documented chunks)
+This one was a bit involved to set up. In this repository is a
+directory, =mu4e= that contains corresponding configuration files for
+offlineimap and msmtp. These two programs do the heavy lifting for the
+mu4e package. I've added a makefile to that directory which will copy
+the dot-files into the right place (clearly this repository is
+destined to be phased out in favor of a more comprehensive dot-files
+setup).
+
+In addition, mu must be built with ~--with-emacs~ option
+in homebrew. Sometimes this build tries to build mu4e against the
+emacs bundled with OSX. That's bad. Try setting the emacs environment
+variable before getting started.
+
+#+BEGIN_SRC emacs-lisp
+(require 'mu4e)
+;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+(setq mu4e-sent-messages-behavior 'delete)
+;; Gmail also has its own strategy for trash
+(setq mu4e-trash-messages-behavior 'delete)
+(setq mu4e-get-mail-command "/usr/local/bin/offlineimap")
+(setq mu4e-mu-binary "/usr/local/bin/mu")
+(setq mu4e-maildir "~/Mail") ;; top-level Maildir
+(setq mu4e-sent-folder "/LocalOnly/Sent") ; These are not really important
+(setq mu4e-drafts-folder "/LocalOnly/Drafts") ; as gmail does its own accounting
+(setq mu4e-trash-folder "/LocalOnly/Trash") ; these just shut up mu4e
+(setq mu4e-user-mail-address-list (list "peter@thoughtspot.net" "pschmied@uw.edu"))
+(setq message-kill-buffer-on-exit t)
+;; Use fancy chars
+(setq mu4e-use-fancy-chars t)
+;; Shortcuts
+(setq mu4e-maildir-shortcuts
+      '(("/Thoughtspot/INBOX" . ?t)
+        ("/UW/INBOX" . ?u)
+        ))
+
+;; Convert rich (HTML) mail to text---this option works in OSX
+(setq mu4e-html2text-command
+  "textutil -stdin -format html -convert txt -stdout")
+
+;; Don't think I need this, as GMail should archive all of this by default
+;; Smart refile locations 
+;; (setq mu4e-refile-folder
+;;       (lambda (msg)
+;;         (cond
+;;          ;; messages sent directly to me go to /archive
+;;          ;; also `mu4e-user-mail-address-regexp' can be used
+;;          ((mu4e-message-contact-field-matches msg :to "marius@gitorious")
+;;           "/Gitorious/archive")
+;;          ((mu4e-message-contact-field-matches msg :to "marius.mathiesen@gmail.com")
+;;           "/Gmail/archive")
+;;          ((mu4e-message-contact-field-matches msg :to "zmalltalker@zmalltalker.com")
+;;           "/Gmail/archive")
+;;          ((mu4e-message-contact-field-matches msg :to "marius@shortcut.no")
+;;           "/Shortcut/archive")
+;;          ;; everything else goes to /archive
+;;          ;; important to have a catch-all at the end!
+;;          (t  "/Gmail/archive"))))
+
+
+;; Try to display images in mu4e
+(setq
+ mu4e-view-show-images t
+ mu4e-view-image-max-width 800)
+
+;; sending mail
+(setq message-send-mail-function 'message-send-mail-with-sendmail
+      sendmail-program "/usr/local/bin/msmtp"
+      user-full-name "Peter Schmiedeskamp")
+
+(setq mu4e-confirm-quit nil
+      mu4e-headers-date-format "%d/%b/%Y %H:%M" ; date format
+      mu4e-html2text-command "html2text -utf8 -width 72"
+      )
+
+;; Borrowed from http://ionrock.org/emacs-email-and-mu.html
+;; Choose account label to feed msmtp -a option based on From header
+;; in Message buffer; This function must be added to
+;; message-send-mail-hook for on-the-fly change of From address before
+;; sending message since message-send-mail-hook is processed right
+;; before sending message.
+(defun choose-msmtp-account ()
+  (if (message-mail-p)
+      (save-excursion
+        (let*
+            ((from (save-restriction
+                     (message-narrow-to-headers)
+                     (message-fetch-field "from")))
+             (account
+              (cond
+               ((string-match "peter@thoughtspot.net" from) "Thoughtspot")
+               ((string-match "pschmied@uw.edu" from) "UW"))))
+          (setq message-sendmail-extra-arguments (list '"-a" account))))))
+(setq message-sendmail-envelope-from 'header)
+(add-hook 'message-send-mail-hook 'choose-msmtp-account)
+(add-to-list 'mu4e-bookmarks
+             '("maildir:/Thoughtspot/inbox OR maildir:/UW/inbox flag:unread" "Today's news" ?z))
+
+;; Reply to mail using the account that original message was sent to
+(add-hook 'mu4e-compose-pre-hook
+          (defun my-set-from-address ()
+            "Set the From address based on the To address of the original."
+            (let ((msg mu4e-compose-parent-message)) ;; msg is shorter...
+              (if msg
+                  (setq user-mail-address
+                        (cond
+                         ((mu4e-message-contact-field-matches msg :to "peter@thoughtspot.net")
+                          "peter@thoughtspot.net")
+                         ((mu4e-message-contact-field-matches msg :to "pschmied@uw.edu")
+                          "pschmied@uw.edu")
+                         (t "peter@thoughtspot.net")))))))
+#+END_SRC
