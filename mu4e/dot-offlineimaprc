@@ -1,0 +1,57 @@
+# Configuration for Offlineimap, the program I use to download my
+# email.
+
+# NOTE: Secure password storage is based on instructions found at
+# https://github.com/sup-heliotrope/sup/wiki/Securely-Store-Password
+# Please see that site for additional keystore examples including Pass
+
+# SSL configuration here relies on homebrew openssl being installed
+
+# Options common to all accounts
+[general]
+accounts = Thoughtspot,UW
+pythonfile = ~/.offlineimap.py
+
+
+######################################################
+# Thoughtspot mail account setup
+######################################################
+
+[Account Thoughtspot]
+localrepository = Thoughtspot-Local
+remoterepository = Thoughtspot-Remote
+
+[Repository Thoughtspot-Local]
+type = GmailMaildir
+localfolders = ~/Mail/Thoughtspot
+
+[Repository Thoughtspot-Remote]
+type = Gmail
+realdelete = no
+remoteuser = peter@thoughtspot.net
+remotepasseval = keyring.get_password('gmail', 'thoughtspot')
+folderfilter = lambda foldername: foldername in ['INBOX', '[Gmail]/Sent Mail', '[Gmail]/Drafts', '[Gmail]/Trash']
+ssl = yes
+sslcacertfile = /usr/local/etc/openssl/cert.pem
+
+
+######################################################
+# UW mail account setup
+######################################################
+
+[Account UW]
+localrepository = UW-Local
+remoterepository = UW-Remote
+
+[Repository UW-Local]
+type = GmailMaildir
+localfolders = ~/Mail/UW
+
+[Repository UW-Remote]
+type = Gmail
+realdelete = no
+remoteuser = pschmied@uw.edu
+remotepasseval = keyring.get_password('gmail', 'uw')
+folderfilter = lambda foldername: foldername in ['INBOX', '[Gmail]/Sent Mail', '[Gmail]/Drafts', '[Gmail]/Trash']
+ssl = yes
+sslcacertfile = /usr/local/etc/openssl/cert.pem
