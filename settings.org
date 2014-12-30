@@ -228,7 +228,7 @@ way of doing things.
 (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "LaTeXmk")))
 (add-hook 'LaTeX-mode-hook '(lambda () (setq compile-command "latexmk -pdf")))
 #+END_SRC
-* TODO Email (split into non-monolithic, documented chunks)
+* Email 
 This one was a bit involved to set up. In this repository is a
 directory, =mu4e= that contains corresponding configuration files for
 offlineimap and msmtp. These two programs do the heavy lifting for the
@@ -242,66 +242,84 @@ in homebrew. Sometimes this build tries to build mu4e against the
 emacs bundled with OSX. That's bad. Try setting the emacs environment
 variable before getting started.
 
+** Mailbox locations and message filing behaviors
 #+BEGIN_SRC emacs-lisp
-(require 'mu4e)
-;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-(setq mu4e-sent-messages-behavior 'delete)
-;; Gmail also has its own strategy for trash
-(setq mu4e-trash-messages-behavior 'delete)
-(setq mu4e-get-mail-command "/usr/local/bin/offlineimap")
-(setq mu4e-mu-binary "/usr/local/bin/mu")
-(setq mu4e-maildir "~/Mail") ;; top-level Maildir
-(setq mu4e-sent-folder "/LocalOnly/Sent") ; These are not really important
-(setq mu4e-drafts-folder "/LocalOnly/Drafts") ; as gmail does its own accounting
-(setq mu4e-trash-folder "/LocalOnly/Trash") ; these just shut up mu4e
-(setq mu4e-user-mail-address-list (list "peter@thoughtspot.net" "pschmied@uw.edu"))
-(setq message-kill-buffer-on-exit t)
-;; Use fancy chars
-(setq mu4e-use-fancy-chars t)
-;; Shortcuts
-(setq mu4e-maildir-shortcuts
-      '(("/Thoughtspot/INBOX" . ?t)
-        ("/UW/INBOX" . ?u)
-        ))
+  (require 'mu4e)
+  ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+  (setq mu4e-sent-messages-behavior 'delete)
+  ;; Gmail also has its own strategy for trash
+  (setq mu4e-trash-messages-behavior 'delete)
+  (setq mu4e-get-mail-command "/usr/local/bin/offlineimap")
+  (setq mu4e-mu-binary "/usr/local/bin/mu")
+  (setq mu4e-maildir "~/Mail") ;; top-level Maildir
+  (setq mu4e-sent-folder "/LocalOnly/Sent") ; These are not really important
+  (setq mu4e-drafts-folder "/LocalOnly/Drafts") ; as gmail does its own accounting
+  (setq mu4e-trash-folder "/LocalOnly/Trash") ; these just shut up mu4e
+  (setq mu4e-user-mail-address-list (list "peter@thoughtspot.net" "pschmied@uw.edu"))
 
-;; Convert rich (HTML) mail to text---this option works in OSX
-(setq mu4e-html2text-command
-  "textutil -stdin -format html -convert txt -stdout")
+  ;; Don't think this is needed for most Gmail setups, as GMail archives
+  ;; things by default, but this sets up smart refile locations if such
+  ;; a thing becomes necessary.
+  ;; (setq mu4e-refile-folder
+  ;;       (lambda (msg)
+  ;;         (cond
+  ;;          ;; messages sent directly to me go to /archive
+  ;;          ;; also `mu4e-user-mail-address-regexp' can be used
+  ;;          ((mu4e-message-contact-field-matches msg :to "marius@gitorious")
+  ;;           "/Gitorious/archive")
+  ;;          ((mu4e-message-contact-field-matches msg :to "marius.mathiesen@gmail.com")
+  ;;           "/Gmail/archive")
+  ;;          ((mu4e-message-contact-field-matches msg :to "zmalltalker@zmalltalker.com")
+  ;;           "/Gmail/archive")
+  ;;          ((mu4e-message-contact-field-matches msg :to "marius@shortcut.no")
+  ;;           "/Shortcut/archive")
+  ;;          ;; everything else goes to /archive
+  ;;          ;; important to have a catch-all at the end!
+  ;;          (t  "/Gmail/archive"))))
+#+END_SRC
 
-;; Don't think I need this, as GMail should archive all of this by default
-;; Smart refile locations 
-;; (setq mu4e-refile-folder
-;;       (lambda (msg)
-;;         (cond
-;;          ;; messages sent directly to me go to /archive
-;;          ;; also `mu4e-user-mail-address-regexp' can be used
-;;          ((mu4e-message-contact-field-matches msg :to "marius@gitorious")
-;;           "/Gitorious/archive")
-;;          ((mu4e-message-contact-field-matches msg :to "marius.mathiesen@gmail.com")
-;;           "/Gmail/archive")
-;;          ((mu4e-message-contact-field-matches msg :to "zmalltalker@zmalltalker.com")
-;;           "/Gmail/archive")
-;;          ((mu4e-message-contact-field-matches msg :to "marius@shortcut.no")
-;;           "/Shortcut/archive")
-;;          ;; everything else goes to /archive
-;;          ;; important to have a catch-all at the end!
-;;          (t  "/Gmail/archive"))))
+** Keyboard shortcuts
+#+BEGIN_SRC emacs-lisp
+  ;; Shortcuts
+  (setq mu4e-maildir-shortcuts
+        '(("/Thoughtspot/INBOX" . ?t)
+          ("/UW/INBOX" . ?u)
+          ))
+#+END_SRC
+
+** Aesthetic / display options
+#+BEGIN_SRC emacs-lisp
+  ;; Use fancy chars
+  (setq mu4e-use-fancy-chars t)
+
+  ;; Try to display images in mu4e
+  (setq
+   mu4e-view-show-images t
+   mu4e-view-image-max-width 800)
+
+  ;; Date format
+  (setq mu4e-headers-date-format "%d/%b/%Y %H:%M") 
+
+  ;; Quitting mu4e
+  (setq message-kill-buffer-on-exit t
+        mu4e-confirm-quit nil)
+#+END_SRC
+
+** HTML mail handler
+#+BEGIN_SRC emacs-lisp
+  ;; Convert rich (HTML) mail to text---this option works in OSX
+  (setq mu4e-html2text-command
+        "textutil -stdin -format html -convert txt -stdout")
+#+END_SRC
 
 
-;; Try to display images in mu4e
-(setq
- mu4e-view-show-images t
- mu4e-view-image-max-width 800)
+** Configure mail sending
 
+#+BEGIN_SRC emacs-lisp
 ;; sending mail
 (setq message-send-mail-function 'message-send-mail-with-sendmail
       sendmail-program "/usr/local/bin/msmtp"
       user-full-name "Peter Schmiedeskamp")
-
-(setq mu4e-confirm-quit nil
-      mu4e-headers-date-format "%d/%b/%Y %H:%M" ; date format
-      mu4e-html2text-command "html2text -utf8 -width 72"
-      )
 
 ;; Borrowed from http://ionrock.org/emacs-email-and-mu.html
 ;; Choose account label to feed msmtp -a option based on From header
