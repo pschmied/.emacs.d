@@ -257,6 +257,8 @@ variable before getting started.
   (setq mu4e-trash-folder "/LocalOnly/Trash") ; these just shut up mu4e
   (setq mu4e-user-mail-address-list (list "peter@thoughtspot.net" "pschmied@uw.edu"))
 
+  ;; Default accunt to send from
+  (setq user-mail-address "peter@thoughtspot.net")
   ;; Don't think this is needed for most Gmail setups, as GMail archives
   ;; things by default, but this sets up smart refile locations if such
   ;; a thing becomes necessary.
@@ -299,7 +301,6 @@ insert the signature manually]] with =C-c C-w=.
 
   (setq mu4e-compose-signature
 "
------------------------------------------------------
 Peter Schmiedeskamp
 PhD Student - Urban Planning
 University of Washington
