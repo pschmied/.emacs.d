@@ -166,6 +166,15 @@ Aspell seems to be the best here. Homebrew install with ~brew install
 
 
 * Org-mode / org-babel setup
+Set some /global/ keybindings for org-mode.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook 'turn-on-font-lock) ; not needed when
+                                          ; global-font-lock-mode
+                                          ; is on
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cb" 'org-iswitchb)
+#+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 ;; active Org Babel languages
