@@ -27,25 +27,26 @@ Installation of these configuration files is simple. If you're not me,
 * Install packages at startup if needed
 
 #+BEGIN_SRC emacs-lisp
-  (defvar my-packages '(exec-path-from-shell
-                        paredit
-                        ess
-                        auto-complete
-                        twilight-theme
-                        markdown-mode
-                        markdown-mode+
-                        auctex
-                        haskell-mode
-                        scion
-                        pandoc-mode
-                        ox-pandoc
-                        polymode)
-    "A list of packages to ensure are installed at launch.")
+    (defvar my-packages '(exec-path-from-shell
+                          paredit
+                          ess
+                          auto-complete
+                          twilight-theme
+                          markdown-mode
+                          markdown-mode+
+                          auctex
+                          haskell-mode
+                          scion
+                          pandoc-mode
+                          ox-pandoc
+                          polymode
+                          org-page)
+      "A list of packages to ensure are installed at launch.")
 
-  ;; Iterate list of packages and install
-  (dolist (p my-packages)
-    (when (not (package-installed-p p))
-      (package-install p)))
+    ;; Iterate list of packages and install
+    (dolist (p my-packages)
+      (when (not (package-installed-p p))
+        (package-install p)))
 #+END_SRC
 
 * OSX path fix
@@ -165,7 +166,9 @@ Aspell seems to be the best here. Homebrew install with ~brew install
 
 
 
-* Org-mode / org-babel setup
+* Org-mode / org-babel / org-pages setup
+
+** Keybindings
 Set some /global/ keybindings and parameters for org-mode.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'turn-on-font-lock) ; not needed when
@@ -182,6 +185,7 @@ Set some /global/ keybindings and parameters for org-mode.
   (global-set-key "\C-cb" 'org-iswitchb)
 #+END_SRC
 
+** Babel config
 #+BEGIN_SRC emacs-lisp
 ;; active Org Babel languages
 (org-babel-do-load-languages
@@ -200,7 +204,39 @@ Set some /global/ keybindings and parameters for org-mode.
 (add-hook 'org-mode-hook 'org-display-inline-images)
 #+END_SRC
 
+** Org-pages config
+#+BEGIN_SRC emacs-lisp
+  (require 'org-page)
+  (setq op/repository-directory "~/Websites/pschmied.github.io/")
+  (setq op/site-domain "http://www.thoughtspot.net/")
+  (setq op/site-main-title "Peter Schmiedeskamp")
+  (setq op/site-sub-title "Research interests, code, musings, and other bits and sundry")
+  (setq op/theme-root-directory "~/Websites/org-page/themes/")
 
+  (setq op/category-config-alist
+    '(("blog" ;; this is the default configuration
+      :show-meta t
+      :show-comment nil
+      :uri-generator op/generate-uri
+      :uri-template "/blog/%y/%m/%d/%t/"
+      :sort-by :date     ;; how to sort the posts
+      :category-index nil) ;; generate category index or not
+     ("index"
+      :show-meta nil
+      :show-comment nil
+      :uri-generator op/generate-uri
+      :uri-template "/"
+      :sort-by :date
+      :category-index nil)
+     ("about"
+      :show-meta nil
+      :show-comment nil
+      :uri-generator op/generate-uri
+      :uri-template "/about/"
+      :sort-by :date
+      :category-index nil)
+     ))
+#+END_SRC
 
 * ESS - Emacs Speaks Statistics (R, Julia)
 #+BEGIN_SRC emacs-lisp
@@ -339,6 +375,9 @@ pschmied@uw.edu | http://www.thoughtspot.net
   ;; Quitting mu4e
   (setq message-kill-buffer-on-exit t
         mu4e-confirm-quit nil)
+
+  ;; Don't show duplicate messages in searches
+  (setq mu4e-headers-skip-duplicates t)
 #+END_SRC
 
 ** HTML mail handler
