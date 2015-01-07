@@ -30,7 +30,7 @@ type = Gmail
 realdelete = no
 remoteuser = peter@thoughtspot.net
 remotepasseval = keyring.get_password('gmail', 'thoughtspot')
-folderfilter = lambda foldername: foldername in ['INBOX', '[Gmail]/Sent Mail', '[Gmail]/Drafts', '[Gmail]/Trash']
+folderfilter = lambda foldername: foldername in ['INBOX', '[Gmail]/Sent Mail', '[Gmail]/Drafts', '[Gmail]/Trash', '[Gmail]/All Mail']
 ssl = yes
 sslcacertfile = /usr/local/etc/openssl/cert.pem
 
@@ -52,6 +52,6 @@ type = Gmail
 realdelete = no
 remoteuser = pschmied@uw.edu
 remotepasseval = keyring.get_password('gmail', 'uw')
-folderfilter = lambda foldername: foldername in ['INBOX', '[Gmail]/Sent Mail', '[Gmail]/Drafts', '[Gmail]/Trash']
+folderfilter = lambda foldername: foldername in ['INBOX', '[Gmail]/Sent Mail', '[Gmail]/Drafts', '[Gmail]/Trash', '[Gmail]/All Mail']
 ssl = yes
 sslcacertfile = /usr/local/etc/openssl/cert.pem
