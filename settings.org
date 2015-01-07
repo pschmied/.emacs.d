@@ -187,21 +187,22 @@ Set some /global/ keybindings and parameters for org-mode.
 
 ** Babel config
 #+BEGIN_SRC emacs-lisp
-;; active Org Babel languages
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((R . t)
-   (emacs-lisp . t)
-   ;(julia . t)
-   (sh . t)
-   (latex . t)
-   (python . t)
-   (sql . t)
-   (sqlite . t)))
+  ;; active Org Babel languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (emacs-lisp . t)
+     ;(julia . t)
+     (sh . t)
+     (latex . t)
+     (python . t)
+     (sql . t)
+     (sqlite . t)
+     (ditaa .t)))
 
-;; Org babel inline images
-(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)   
-(add-hook 'org-mode-hook 'org-display-inline-images)
+  ;; Org babel inline images
+  ;;(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)   
+  ;;(add-hook 'org-mode-hook 'org-display-inline-images)
 #+END_SRC
 
 ** Org-pages config
@@ -333,15 +334,19 @@ variable before getting started.
 
 ** Keyboard shortcuts
 #+BEGIN_SRC emacs-lisp
-    ;; Shortcuts
-    (setq mu4e-maildir-shortcuts
-          '(("/Thoughtspot/INBOX" . ?t)
-            ("/UW/INBOX" . ?u)))
+  ;; Shortcuts
+  (setq mu4e-maildir-shortcuts
+        '(("/Thoughtspot/INBOX" . ?t)
+          ("/UW/INBOX" . ?u)))
 
-    ;; Bookmarks (in addition to defaults)
-    (add-to-list
-     'mu4e-bookmarks
-     '("maildir:/Thoughtspot/INBOX OR maildir:/UW/INBOX" "All Inboxes" ?a))
+  ;; Bookmarks (in addition to defaults)
+  (add-to-list
+   'mu4e-bookmarks
+   '("maildir:/Thoughtspot/INBOX OR maildir:/UW/INBOX" "All Inboxes" ?a))
+
+  (add-to-list
+   'mu4e-bookmarks
+   '("date:today..now AND NOT flag:trashed" "Today's messages"       ?t))
 #+END_SRC
 
 ** Email signature
@@ -382,13 +387,12 @@ pschmied@uw.edu | http://www.thoughtspot.net
 
 ** HTML mail handler
 #+BEGIN_SRC emacs-lisp
-  ;; Convert rich (HTML) mail to text---this option works in OSX
-  (setq mu4e-html2text-command
-        "textutil -stdin -format html -convert txt -stdout")
+  ;; Convert rich (HTML) mail to text---tried a lot of converters. Pandoc, FTW.
+  (setq mu4e-html2text-command "pandoc -f html -t plain")
 #+END_SRC
 
 
-** Configure mail sending
+** Configure mail composition and sending
 
 #+BEGIN_SRC emacs-lisp
   ;; sending mail
@@ -435,4 +439,10 @@ pschmied@uw.edu | http://www.thoughtspot.net
                            ((mu4e-message-contact-field-matches msg :to "pschmied@u.washington.edu")
                             "pschmied@uw.edu")
                            (t "peter@thoughtspot.net")))))))
+
+  ;; Turn on flyspell mode when typing
+  (add-hook 'mu4e-compose-mode-hook
+     (defun my-do-compose-stuff ()
+        "My settings for message composition."
+        (flyspell-mode)))
 #+END_SRC
