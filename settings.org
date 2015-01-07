@@ -110,10 +110,10 @@ set a sane window size.
 (set-frame-size-according-to-resolution)
 #+END_SRC
 
-** Hide the menubar
 
-#+BEGIN_SRC emacs-lisp
-(menu-bar-mode 1)
+** Toolbar disable
+#+BEGIN_SRC elisp
+(tool-bar-mode -1)
 #+END_SRC
 
 ** Silence the audible bell
