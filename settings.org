@@ -11,14 +11,12 @@ how I had configured things.
 
 This document hasn't entirely done away with ~init.el~. The version of
 that file included in this repository is a stub, with only the bare
-minimum code required to bootstrap a recent org-mode. Please consult
-that file for more detail, but the boostrap:
+minimum code required to bootstrap. Please consult that file for more
+detail, but basically the boostrap:
 
 1. Starts the emacs server
-2. Sets up emacs to pull from the [[http://melpa.org][Melpa package repository]]
-3. Installs a new org-mode if it isn't already installed
-4. Loads org-mode
-5. Loads this file
+2. Loads org-mode
+3. Loads this file
 
 Installation of these configuration files is simple. If you're not me,
  I recommend [[https://help.github.com/articles/fork-a-repo/][forking this repository]] before cloning it to your home
@@ -27,26 +25,37 @@ Installation of these configuration files is simple. If you're not me,
 * Install packages at startup if needed
 
 #+BEGIN_SRC emacs-lisp
-    (defvar my-packages '(exec-path-from-shell
-                          paredit
-                          ess
-                          auto-complete
-                          twilight-theme
-                          markdown-mode
-                          markdown-mode+
-                          auctex
-                          haskell-mode
-                          scion
-                          pandoc-mode
-                          ox-pandoc
-                          polymode
-                          org-page)
-      "A list of packages to ensure are installed at launch.")
 
-    ;; Iterate list of packages and install
-    (dolist (p my-packages)
-      (when (not (package-installed-p p))
-        (package-install p)))
+  ;; Set up the melpa package repository
+  (require 'package)
+  (setq package-user-dir "~/.emacs.d/elpa/")
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  (package-initialize)
+  (when (not package-archive-contents)
+    (package-refresh-contents))
+
+
+  (defvar my-packages '(exec-path-from-shell
+                        paredit
+                        ess
+                        auto-complete
+                        twilight-theme
+                        markdown-mode
+                        markdown-mode+
+                        auctex
+                        haskell-mode
+                        scion
+                        pandoc-mode
+                        ox-pandoc
+                        polymode
+                        org-page)
+    "A list of packages to ensure are installed at launch.")
+
+  ;; Iterate list of packages and install
+  (dolist (p my-packages)
+    (when (not (package-installed-p p))
+      (package-install p)))
 #+END_SRC
 
 * OSX path fix
