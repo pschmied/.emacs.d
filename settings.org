@@ -25,7 +25,6 @@ Installation of these configuration files is simple. If you're not me,
 * Install packages at startup if needed
 
 #+BEGIN_SRC emacs-lisp
-
   ;; Set up the melpa package repository
   (require 'package)
   (setq package-user-dir "~/.emacs.d/elpa/")
@@ -35,12 +34,16 @@ Installation of these configuration files is simple. If you're not me,
   (when (not package-archive-contents)
     (package-refresh-contents))
 
-
+  ;; packages to install
   (defvar my-packages '(exec-path-from-shell
+                        better-defaults
+                        ido-ubiquitous
+                        smex
                         paredit
                         ess
+                        graphviz-dot-mode
+                        auctex-latexmk
                         auto-complete
-                        twilight-theme
                         markdown-mode
                         markdown-mode+
                         auctex
@@ -64,8 +67,8 @@ information is stored both in Apple netinfo database as well as in the
 more traditional locations. This makes things sane again.
 
 #+BEGIN_SRC emacs-lisp
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
 #+END_SRC
 
 * Aesthetics and behaviors
@@ -81,7 +84,10 @@ also been known to dabble in solarized for Solaris nostalgia reasons.
   (load-theme 'leuven t)                 ; leuven is light
   ;; (load-theme 'twilight t)               ; twilight is dark
 #+END_SRC
-
+** Disable welcome screen
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)
+#+END_SRC
 ** Default font
 I like =Source Code Pro= for my monospaced font. The easiest way to
 get this via homebrew cask (don't forget to ~brew tap caskroom/fonts~
@@ -119,10 +125,10 @@ set a sane window size.
 (set-frame-size-according-to-resolution)
 #+END_SRC
 
-
-** Toolbar disable
-#+BEGIN_SRC elisp
-(tool-bar-mode -1)
+** Toolbar disable / menubar enable
+#+BEGIN_SRC emacs-lisp
+(tool-bar-mode -1) ; clickable icons bad
+(menu-bar-mode 1) ; dropdown menus good
 #+END_SRC
 
 ** Silence the audible bell
@@ -155,6 +161,7 @@ Aspell seems to be the best here. Homebrew install with ~brew install
       (eval-after-load "ispell"
         '(progn (defun ispell-get-coding-system () 'utf-8)))))
 #+END_SRC
+
 * Auto-completions and miscellaneous conveniences
 ** Recent file list
 #+BEGIN_SRC emacs-lisp
@@ -163,6 +170,8 @@ Aspell seems to be the best here. Homebrew install with ~brew install
 (setq recentf-max-menu-items 50)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 #+END_SRC
+
+
 
 ** Function to insert a date
 #+BEGIN_SRC emacs-lisp
@@ -175,7 +184,33 @@ Aspell seems to be the best here. Homebrew install with ~brew install
 
 
 
+** Auto-completions -- ido/smex
+#+BEGIN_SRC emacs-lisp
+  (ido-mode t)
+  (setq ido-everywhere t)
+  (setq ido-enable-flex-matching t)
+  (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
+
+  (defun ido-recentf-open ()
+    "Use `ido-completing-read' to \\[find-file] a recent file"
+    (interactive)
+    (if (find-file (ido-completing-read "Find recent file: " recentf-list))
+        (message "Opening file...")
+      (message "Aborting")))
+
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+  ;; This is your old M-x.
+  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+#+END_SRC
+
 * Org-mode / org-babel / org-pages setup
+
+** Indentation
+Be smarter about indenting behavior (see [[http://emacswiki.org/emacs/LineWrap][the emacs wiki page]]).
+#+BEGIN_SRC emacs-lisp
+  (setq org-startup-indented t)
+#+END_SRC
 
 ** Keybindings
 Set some /global/ keybindings and parameters for org-mode.
@@ -201,7 +236,8 @@ Set some /global/ keybindings and parameters for org-mode.
    'org-babel-load-languages
    '((R . t)
      (emacs-lisp . t)
-     ;(julia . t)
+     ;; (julia . t)
+     (dot . t)
      (sh . t)
      (latex . t)
      (python . t)
@@ -210,8 +246,17 @@ Set some /global/ keybindings and parameters for org-mode.
      (ditaa .t)))
 
   ;; Org babel inline images
-  ;;(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)   
-  ;;(add-hook 'org-mode-hook 'org-display-inline-images)
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)   
+  (add-hook 'org-mode-hook 'org-display-inline-images)
+  (setq org-confirm-babel-evaluate nil)
+
+  ;; Enter dot-mode when editing graphviz dot files
+  (add-to-list 'org-src-lang-modes (quote ("dot" . graphviz-dot)))
+
+  ;; booktabs tables
+  (setq org-export-latex-tables-hline "\\midrule")
+  (setq org-export-latex-tables-tstart "\\toprule")
+  (setq org-export-latex-tables-tend "\\bottomrule")
 #+END_SRC
 
 ** Org-pages config
@@ -446,6 +491,12 @@ pschmied@uw.edu | http://www.thoughtspot.net
                            ((mu4e-message-contact-field-matches msg :to "pschmied@uw.edu")
                             "pschmied@uw.edu")
                            ((mu4e-message-contact-field-matches msg :to "pschmied@u.washington.edu")
+                            "pschmied@uw.edu")
+                           ((mu4e-message-contact-field-matches msg :cc "peter@thoughtspot.net")
+                            "peter@thoughtspot.net")
+                           ((mu4e-message-contact-field-matches msg :cc "pschmied@uw.edu")
+                            "pschmied@uw.edu")
+                           ((mu4e-message-contact-field-matches msg :cc "pschmied@u.washington.edu")
                             "pschmied@uw.edu")
                            (t "peter@thoughtspot.net")))))))
 
