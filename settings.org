@@ -257,6 +257,9 @@ Set some /global/ keybindings and parameters for org-mode.
   (setq org-export-latex-tables-hline "\\midrule")
   (setq org-export-latex-tables-tstart "\\toprule")
   (setq org-export-latex-tables-tend "\\bottomrule")
+
+  ;; use latexmk to compile latex sources
+  (setq org-latex-pdf-process (list "latexmk -f -pdf %f"))
 #+END_SRC
 
 ** Org-pages config
