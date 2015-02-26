@@ -48,11 +48,18 @@ Installation of these configuration files is simple. If you're not me,
                         markdown-mode+
                         auctex
                         haskell-mode
+                        ghc
+                        ghci-completion
+                        hi2
+                        cider
                         scion
                         pandoc-mode
                         ox-pandoc
                         polymode
-                        org-page)
+                        org-page
+                        outshine
+                        magit
+                        sx)
     "A list of packages to ensure are installed at launch.")
 
   ;; Iterate list of packages and install
@@ -81,8 +88,9 @@ also been known to dabble in solarized for Solaris nostalgia reasons.
 
 #+BEGIN_SRC emacs-lisp
   ;; Pick a theme. Choose wisely.
-  (load-theme 'leuven t)                 ; leuven is light
+  ;; (load-theme 'leuven t)                 ; leuven is light
   ;; (load-theme 'twilight t)               ; twilight is dark
+  (load-theme 'tangotango t)              ; tangotango is also dark
 #+END_SRC
 ** Disable welcome screen
 #+BEGIN_SRC emacs-lisp
@@ -218,6 +226,8 @@ Set some /global/ keybindings and parameters for org-mode.
   (add-hook 'org-mode-hook 'turn-on-font-lock) ; not needed when
                                           ; global-font-lock-mode
                                           ; is on
+  (add-hook 'org-mode-hook 'turn-on-auto-fill) ; Autofill
+  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1))) ; spellcheck
 
   ;; Set a catch-all notes file for life and miscellaneous
   (setq org-default-notes-file "~/Desktop/notes.org")
@@ -231,35 +241,36 @@ Set some /global/ keybindings and parameters for org-mode.
 
 ** Babel config
 #+BEGIN_SRC emacs-lisp
-  ;; active Org Babel languages
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((R . t)
-     (emacs-lisp . t)
-     ;; (julia . t)
-     (dot . t)
-     (sh . t)
-     (latex . t)
-     (python . t)
-     (sql . t)
-     (sqlite . t)
-     (ditaa .t)))
+    ;; active Org Babel languages
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((R . t)
+       (emacs-lisp . t)
+       ;; (julia . t)
+       (dot . t)
+       (sh . t)
+       (latex . t)
+       (python . t)
+       (sql . t)
+       (sqlite . t)
+       (ditaa .t)
+       (scheme .t)))
 
-  ;; Org babel inline images
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)   
-  (add-hook 'org-mode-hook 'org-display-inline-images)
-  (setq org-confirm-babel-evaluate nil)
+    ;; Org babel inline images
+    (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)   
+    (add-hook 'org-mode-hook 'org-display-inline-images)
+    (setq org-confirm-babel-evaluate nil)
 
-  ;; Enter dot-mode when editing graphviz dot files
-  (add-to-list 'org-src-lang-modes (quote ("dot" . graphviz-dot)))
+    ;; Enter dot-mode when editing graphviz dot files
+    (add-to-list 'org-src-lang-modes (quote ("dot" . graphviz-dot)))
 
-  ;; booktabs tables
-  (setq org-export-latex-tables-hline "\\midrule")
-  (setq org-export-latex-tables-tstart "\\toprule")
-  (setq org-export-latex-tables-tend "\\bottomrule")
+    ;; booktabs tables
+    (setq org-export-latex-tables-hline "\\midrule")
+    (setq org-export-latex-tables-tstart "\\toprule")
+    (setq org-export-latex-tables-tend "\\bottomrule")
 
-  ;; use latexmk to compile latex sources
-  (setq org-latex-pdf-process (list "latexmk -f -pdf %f"))
+    ;; use latexmk to compile latex sources
+    (setq org-latex-pdf-process (list "latexmk -f -pdf %f"))
 #+END_SRC
 
 ** Org-pages config
@@ -298,16 +309,25 @@ Set some /global/ keybindings and parameters for org-mode.
 
 * ESS - Emacs Speaks Statistics (R, Julia)
 #+BEGIN_SRC emacs-lisp
-(require 'ess-site) ; load the package
+  (require 'ess-site) ; load the package
 #+END_SRC
 ** R
-R works out of the box. Yay!
-
-** Julia
+Fix indentation when using fun operators like ~+~ with ggplot and ~%>~ from =magrittr=.
 #+BEGIN_SRC emacs-lisp
-(setq inferior-julia-program-name "/opt/homebrew-cask/Caskroom/julia/0.3.2/Julia-0.3.2.app/Contents/Resources/julia/bin/julia")
+  (add-hook 'ess-mode-hook
+            (lambda ()
+              (setq ess-first-continued-statement-offset 2)
+              (setq ess-continued-statement-offset 0)))
+  (ess-toggle-underscore nil)
 #+END_SRC
 
+* Clojure
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'clojure-mode-hook (lambda () (paredit-mode 1)))
+  (setq nrepl-log-messages t)
+  (setq nrepl-hide-special-buffers t)
+#+END_SRC
 * Python
 This configuration assumes ipython is installed. This should probably
 be revisited, as its been a while since I've looked into the "right"
@@ -326,7 +346,32 @@ way of doing things.
  python-shell-completion-string-code
    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
 #+END_SRC
+* Haskell
+Configure Haskell.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+  (add-hook 'haskell-mode-hook 'turn-on-hi2)
+  (add-hook 'haskell-mode-hook #'hindent-mode)
 
+  (eval-after-load 'haskell-mode
+    '(define-key haskell-mode-map [f8] 'haskell-navigate-imports))
+
+  (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
+    (setenv "PATH" (concat my-cabal-path ":" (getenv "PATH")))
+    (add-to-list 'exec-path my-cabal-path))
+  (custom-set-variables '(haskell-tags-on-save t))
+  (setq haskell-process-path-cabal "~/.cabal/bin/cabal")
+#+END_SRC
+* Racket
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'racket-mode-hook (lambda () (paredit-mode 1)))
+#+END_SRC
+
+* Emacs lisp
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook (lambda () (paredit-mode 1)))
+
+#+END_SRC
 * LaTeX / AucTeX
 #+BEGIN_SRC emacs-lisp
 (add-hook 'LaTeX-mode-hook 'visual-line-mode)
