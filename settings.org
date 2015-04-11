@@ -43,6 +43,7 @@ Installation of these configuration files is simple. If you're not me,
                         ess
                         graphviz-dot-mode
                         auctex-latexmk
+                        tangotango-theme
                         auto-complete
                         markdown-mode
                         markdown-mode+
