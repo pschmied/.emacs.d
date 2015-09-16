@@ -104,7 +104,7 @@ before installing).
 
 #+BEGIN_SRC emacs-lisp
 ;; Default font
-(set-face-attribute 'default nil :family "Source Code Pro" :height 130)
+(set-face-attribute 'default nil :family "Source Code Pro" :height 110)
 #+END_SRC
 
 ** Default window size
@@ -315,10 +315,10 @@ Set some /global/ keybindings and parameters for org-mode.
 ** R
 Fix indentation when using fun operators like ~+~ with ggplot and ~%>~ from =magrittr=.
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'ess-mode-hook
-            (lambda ()
-              (setq ess-first-continued-statement-offset 2)
-              (setq ess-continued-statement-offset 0)))
+  ;; (add-hook 'ess-mode-hook
+  ;;           (lambda ()
+  ;;             (setq ess-first-continued-statement-offset 2)
+  ;;             (setq ess-continued-statement-offset 0)))
   (ess-toggle-underscore nil)
 #+END_SRC
 
