@@ -274,39 +274,6 @@ Set some /global/ keybindings and parameters for org-mode.
     (setq org-latex-pdf-process (list "latexmk -f -pdf %f"))
 #+END_SRC
 
-** Org-pages config
-#+BEGIN_SRC emacs-lisp
-  (require 'org-page)
-  (setq op/repository-directory "~/Websites/pschmied.github.io/")
-  (setq op/site-domain "http://www.thoughtspot.net/")
-  (setq op/site-main-title "Peter Schmiedeskamp")
-  (setq op/site-sub-title "Research interests, code, musings, and other bits and sundry")
-  (setq op/theme-root-directory "~/Websites/org-page/themes/")
-
-  (setq op/category-config-alist
-    '(("blog" ;; this is the default configuration
-      :show-meta t
-      :show-comment nil
-      :uri-generator op/generate-uri
-      :uri-template "/blog/%y/%m/%d/%t/"
-      :sort-by :date     ;; how to sort the posts
-      :category-index nil) ;; generate category index or not
-     ("index"
-      :show-meta nil
-      :show-comment nil
-      :uri-generator op/generate-uri
-      :uri-template "/"
-      :sort-by :date
-      :category-index nil)
-     ("about"
-      :show-meta nil
-      :show-comment nil
-      :uri-generator op/generate-uri
-      :uri-template "/about/"
-      :sort-by :date
-      :category-index nil)
-     ))
-#+END_SRC
 
 * ESS - Emacs Speaks Statistics (R, Julia)
 #+BEGIN_SRC emacs-lisp
