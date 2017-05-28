@@ -25,48 +25,47 @@ Installation of these configuration files is simple. If you're not me,
 * Install packages at startup if needed
 
 #+BEGIN_SRC emacs-lisp
-  ;; Set up the melpa package repository
-  (require 'package)
-  (setq package-user-dir "~/.emacs.d/elpa/")
-  (add-to-list 'package-archives
-               '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (package-initialize)
-  (when (not package-archive-contents)
-    (package-refresh-contents))
+    ;; Set up the melpa package repository
+    (require 'package)
+    (setq package-user-dir "~/.emacs.d/elpa/")
+    (add-to-list 'package-archives
+                 '("melpa" . "http://melpa.org/packages/") t)
+    (add-to-list 'package-archives
+                 '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 
-  ;; packages to install
-  (defvar my-packages '(exec-path-from-shell
-                        better-defaults
-                        ido-ubiquitous
-                        smex
-                        paredit
-                        ess
-                        o-blog
-                        graphviz-dot-mode
-                        auctex-latexmk
-                        tangotango-theme
-                        auto-complete
-                        markdown-mode
-                        markdown-mode+
-                        auctex
-                        haskell-mode
-                        ghc
-                        ghci-completion
-                        hi2
-                        cider
-                        scion
-                        pandoc-mode
-                        ox-pandoc
-                        polymode
-                        outshine
-                        magit
-                        sx)
-    "A list of packages to ensure are installed at launch.")
+    (package-initialize)
+    (when (not package-archive-contents)
+      (package-refresh-contents))
 
-  ;; Iterate list of packages and install
-  (dolist (p my-packages)
-    (when (not (package-installed-p p))
-      (package-install p)))
+    ;; packages to install
+    (defvar my-packages '(exec-path-from-shell
+                          better-defaults
+                          ido-ubiquitous
+                          smex
+                          paredit
+                          ess
+                          graphviz-dot-mode
+                          auctex-latexmk
+                          tangotango-theme
+                          auto-complete
+                          markdown-mode
+                          markdown-mode+
+                          auctex
+                          racket-mode
+                          haskell-mode
+                          ghc
+                          ghci-completion
+                          cider
+                          scion
+                          pandoc-mode
+                          magit
+                          sx)
+      "A list of packages to ensure are installed at launch.")
+
+    ;; Iterate list of packages and install
+    (dolist (p my-packages)
+      (when (not (package-installed-p p))
+        (package-install p)))
 #+END_SRC
 
 * OSX path fix
@@ -104,9 +103,12 @@ before installing).
 
 #+BEGIN_SRC emacs-lisp
 ;; Default font
-(set-face-attribute 'default nil :family "Source Code Pro" :height 110)
+(set-face-attribute 'default nil :family "Terminus" :height 120)
 #+END_SRC
-
+** Focus follows mouse
+#+BEGIN_SRC emacs-lisp
+  (setq mouse-autoselect-window t)
+#+END_SRC
 ** Default window size
 I tend to use a tiling window manager these days, so this is less
 important to me than it used to be. Otherwise, this will intelligently
@@ -335,6 +337,13 @@ Configure Haskell.
   (add-hook 'racket-mode-hook (lambda () (paredit-mode 1)))
 #+END_SRC
 
+* Scala
+#+BEGIN_SRC emacs-lisp
+  (use-package ensime
+               :ensure t
+               :pin melpa-stable)
+
+#+END_SRC
 * Emacs lisp
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook (lambda () (paredit-mode 1)))
@@ -353,14 +362,13 @@ Configure Haskell.
 # * Email 
 # This one was a bit involved to set up. In this repository is a
 # directory, =mu4e= that contains corresponding configuration files for
-# offlineimap and msmtp. These two programs do the heavy lifting for the
-# mu4e package. I've added a makefile to that directory which will copy
-# the dot-files into the right place (clearly this repository is
-# destined to be phased out in favor of a more comprehensive dot-files
-# setup).
+# offlineimap. This program does the heavy lifting for the mu4e
+# package. I've added a makefile to that directory which will copy the
+# dot-files into the right place (clearly this repository is destined to
+# be phased out in favor of a more comprehensive dot-files setup).
 
-# In addition, mu must be built with ~--with-emacs~ option
-# in homebrew. Sometimes this build tries to build mu4e against the
+# In addition, mu must be built with ~--with-emacs~ option if using
+# homebrew on OSX. Sometimes this build tries to build mu4e against the
 # emacs bundled with OSX. That's bad. Try setting the emacs environment
 # variable before getting started.
 
@@ -371,49 +379,21 @@ Configure Haskell.
 #   (setq mu4e-sent-messages-behavior 'delete)
 #   ;; Gmail also has its own strategy for trash
 #   (setq mu4e-trash-messages-behavior 'delete)
-#   (setq mu4e-get-mail-command "/usr/local/bin/offlineimap")
+#   (setq mu4e-get-mail-command "/usr/bin/offlineimap")
 #   (setq mu4e-mu-binary "/usr/local/bin/mu")
-#   (setq mu4e-maildir "~/Mail") ;; top-level Maildir
+#   (setq mu4e-maildir "~/Maildir") ;; top-level Maildir
 #   (setq mu4e-sent-folder "/LocalOnly/Sent") ; These are not really important
 #   (setq mu4e-drafts-folder "/LocalOnly/Drafts") ; as gmail does its own accounting
 #   (setq mu4e-trash-folder "/LocalOnly/Trash") ; these just shut up mu4e
-#   (setq mu4e-user-mail-address-list (list "peter@thoughtspot.net" "pschmied@uw.edu"))
+#   (setq mu4e-user-mail-address-list (list "peter@thoughtspot.net"))
 
 #   ;; Default accunt to send from
 #   (setq user-mail-address "peter@thoughtspot.net")
-#   ;; Don't think this is needed for most Gmail setups, as GMail archives
-#   ;; things by default, but this sets up smart refile locations if such
-#   ;; a thing becomes necessary.
-#   ;; (setq mu4e-refile-folder
-#   ;;       (lambda (msg)
-#   ;;         (cond
-#   ;;          ;; messages sent directly to me go to /archive
-#   ;;          ;; also `mu4e-user-mail-address-regexp' can be used
-#   ;;          ((mu4e-message-contact-field-matches msg :to "marius@gitorious")
-#   ;;           "/Gitorious/archive")
-#   ;;          ((mu4e-message-contact-field-matches msg :to "marius.mathiesen@gmail.com")
-#   ;;           "/Gmail/archive")
-#   ;;          ((mu4e-message-contact-field-matches msg :to "zmalltalker@zmalltalker.com")
-#   ;;           "/Gmail/archive")
-#   ;;          ((mu4e-message-contact-field-matches msg :to "marius@shortcut.no")
-#   ;;           "/Shortcut/archive")
-#   ;;          ;; everything else goes to /archive
-#   ;;          ;; important to have a catch-all at the end!
-#   ;;          (t  "/Gmail/archive"))))
+
 # #+END_SRC
 
 # ** Keyboard shortcuts
 # #+BEGIN_SRC emacs-lisp
-#   ;; Shortcuts
-#   (setq mu4e-maildir-shortcuts
-#         '(("/Thoughtspot/INBOX" . ?t)
-#           ("/UW/INBOX" . ?u)))
-
-#   ;; Bookmarks (in addition to defaults)
-#   (add-to-list
-#    'mu4e-bookmarks
-#    '("maildir:/Thoughtspot/INBOX OR maildir:/UW/INBOX" "All Inboxes" ?a))
-
 #   (add-to-list
 #    'mu4e-bookmarks
 #    '("date:today..now AND NOT flag:trashed" "Today's messages"       ?t))
@@ -427,10 +407,7 @@ Configure Haskell.
 
 #   (setq mu4e-compose-signature
 # "
-# Peter Schmiedeskamp
-# PhD Student - Urban Planning
-# University of Washington
-# pschmied@uw.edu | http://www.thoughtspot.net
+# Sent from my emacs
 # ")
 # #+END_SRC
 
@@ -457,8 +434,13 @@ Configure Haskell.
 
 # ** HTML mail handler
 # #+BEGIN_SRC emacs-lisp
-#   ;; Convert rich (HTML) mail to text---tried a lot of converters. Pandoc, FTW.
+#   ;;; Convert rich (HTML) mail to text---tried a lot of converters. Pandoc, FTW.
 #   (setq mu4e-html2text-command "pandoc -f html -t plain")
+
+#   ;;; And for super problematic emails view them externally with aV
+#   ;;; shortcut
+#   (add-to-list 'mu4e-view-actions
+#     '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 # #+END_SRC
 
 
@@ -466,55 +448,19 @@ Configure Haskell.
 
 # #+BEGIN_SRC emacs-lisp
 #   ;; sending mail
-#   (setq message-send-mail-function 'message-send-mail-with-sendmail
-#         sendmail-program "/usr/local/bin/msmtp"
-#         user-full-name "Peter Schmiedeskamp")
+#   (setq message-send-mail-function 'smtpmail-send-it
+#         starttls-use-gnutls t
+#         smtpmail-starttls-credentials
+#         '(("smtp.gmail.com" 587 nil nil))
+#         smtpmail-auth-credentials
+#         (expand-file-name "~/.authinfo.gpg")
+#         smtpmail-default-smtp-server "smtp.gmail.com"
+#         smtpmail-smtp-server "smtp.gmail.com"
+#         smtpmail-smtp-service 587
+#         smtpmail-debug-info t)
 
-#   ;; Borrowed from http://ionrock.org/emacs-email-and-mu.html
-#   ;; Choose account label to feed msmtp -a option based on From header
-#   ;; in Message buffer; This function must be added to
-#   ;; message-send-mail-hook for on-the-fly change of From address before
-#   ;; sending message since message-send-mail-hook is processed right
-#   ;; before sending message.
-#   (defun choose-msmtp-account ()
-#     (if (message-mail-p)
-#         (save-excursion
-#           (let*
-#               ((from (save-restriction
-#                        (message-narrow-to-headers)
-#                        (message-fetch-field "from")))
-#                (account
-#                 (cond
-#                  ((string-match "peter@thoughtspot.net" from) "Thoughtspot")
-#                  ((string-match "pschmied@uw.edu" from) "UW")
-#                  ((string-match "pschmied@u.washington.edu" from) "UW"))))
-#             (setq message-sendmail-extra-arguments (list '"-a" account))))))
-#   (setq message-sendmail-envelope-from 'header)
-#   (add-hook 'message-send-mail-hook 'choose-msmtp-account)
 #   (add-to-list 'mu4e-bookmarks
-#                '("maildir:/Thoughtspot/inbox OR maildir:/UW/inbox flag:unread" "Today's news" ?z))
-
-#   ;; Reply to mail using the account that original message was sent to
-#   (add-hook 'mu4e-compose-pre-hook
-#             (defun my-set-from-address ()
-#               "Set the From address based on the To address of the original."
-#               (let ((msg mu4e-compose-parent-message)) ;; msg is shorter...
-#                 (if msg
-#                     (setq user-mail-address
-#                           (cond
-#                            ((mu4e-message-contact-field-matches msg :to "peter@thoughtspot.net")
-#                             "peter@thoughtspot.net")
-#                            ((mu4e-message-contact-field-matches msg :to "pschmied@uw.edu")
-#                             "pschmied@uw.edu")
-#                            ((mu4e-message-contact-field-matches msg :to "pschmied@u.washington.edu")
-#                             "pschmied@uw.edu")
-#                            ((mu4e-message-contact-field-matches msg :cc "peter@thoughtspot.net")
-#                             "peter@thoughtspot.net")
-#                            ((mu4e-message-contact-field-matches msg :cc "pschmied@uw.edu")
-#                             "pschmied@uw.edu")
-#                            ((mu4e-message-contact-field-matches msg :cc "pschmied@u.washington.edu")
-#                             "pschmied@uw.edu")
-#                            (t "peter@thoughtspot.net")))))))
+#                '("maildir:/inbox flag:unread" "Today's news" ?z))
 
 #   ;; Turn on flyspell mode when typing
 #   (add-hook 'mu4e-compose-mode-hook
@@ -522,3 +468,7 @@ Configure Haskell.
 #         "My settings for message composition."
 #         (flyspell-mode)))
 # #+END_SRC
+* OpenPGP / GPG / GNUPG
+#+BEGIN_SRC emacs-lisp 
+  (setq epg-gpg-program "gpg2")
+#+END_SRC
