@@ -25,47 +25,48 @@ Installation of these configuration files is simple. If you're not me,
 * Install packages at startup if needed
 
 #+BEGIN_SRC emacs-lisp
-    ;; Set up the melpa package repository
-    (require 'package)
-    (setq package-user-dir "~/.emacs.d/elpa/")
-    (add-to-list 'package-archives
-                 '("melpa" . "http://melpa.org/packages/") t)
-    (add-to-list 'package-archives
-                 '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+  ;; Set up the melpa package repository
+  (require 'package)
+  (setq package-user-dir "~/.emacs.d/elpa/")
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.org/packages/") t)
+  (add-to-list 'package-archives
+               '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 
-    (package-initialize)
-    (when (not package-archive-contents)
-      (package-refresh-contents))
+  (package-initialize)
+  (when (not package-archive-contents)
+    (package-refresh-contents))
 
-    ;; packages to install
-    (defvar my-packages '(exec-path-from-shell
-                          better-defaults
-                          ido-ubiquitous
-                          smex
-                          paredit
-                          ess
-                          graphviz-dot-mode
-                          auctex-latexmk
-                          tangotango-theme
-                          auto-complete
-                          markdown-mode
-                          markdown-mode+
-                          auctex
-                          racket-mode
-                          haskell-mode
-                          ghc
-                          ghci-completion
-                          cider
-                          scion
-                          pandoc-mode
-                          magit
-                          sx)
-      "A list of packages to ensure are installed at launch.")
+  ;; packages to install
+  (defvar my-packages '(use-package
+                        exec-path-from-shell
+                        better-defaults
+                        ido-ubiquitous
+                        smex
+                        paredit
+                        ess
+                        graphviz-dot-mode
+                        auctex-latexmk
+                        tangotango-theme
+                        auto-complete
+                        markdown-mode
+                        markdown-mode+
+                        auctex
+                        racket-mode
+                        haskell-mode
+                        ghc
+                        ghci-completion
+                        cider
+                        scion
+                        pandoc-mode
+                        magit
+                        sx)
+    "A list of packages to ensure are installed at launch.")
 
-    ;; Iterate list of packages and install
-    (dolist (p my-packages)
-      (when (not (package-installed-p p))
-        (package-install p)))
+  ;; Iterate list of packages and install
+  (dolist (p my-packages)
+    (when (not (package-installed-p p))
+      (package-install p)))
 #+END_SRC
 
 * OSX path fix
