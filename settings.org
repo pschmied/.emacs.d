@@ -285,7 +285,7 @@ Set some /global/ keybindings and parameters for org-mode.
                            (setq tab-width 2)
                            (ess-toggle-underscore nil)
                            (electric-pair-mode 1)
-                           (local-set-key (kbd "<C-right") 'paredit-forward-slurp-sexp)
+                           (local-set-key (kbd "C-right") 'paredit-forward-slurp-sexp)
                            (setq electric-pair-inhibit-predicate
                                  `(lambda (c)
                                     (if (char-equal c ?\<)
@@ -301,7 +301,7 @@ Fix indentation when using fun operators like ~+~ with ggplot and ~%>~ from =mag
   ;;           (lambda ()
   ;;             (setq ess-first-continued-statement-offset 2)
   ;;             (setq ess-continued-statement-offset 0)))
-  (ess-toggle-underscore nil)
+  ;; (ess-toggle-underscore nil)
 #+END_SRC
 
 * Clojure
@@ -317,20 +317,11 @@ be revisited, as its been a while since I've looked into the "right"
 way of doing things.
 
 #+BEGIN_SRC emacs-lisp
-  (setq
-   python-shell-interpreter "ipython"
-   python-shell-interpreter-args "--simple-prompt")
-
-  ;; Fix for emacs pre 25.2
-  (with-eval-after-load 'python
-    (defun python-shell-completion-native-try ()
-      "Return non-nil if can trigger native completion."
-      (let ((python-shell-completion-native-enable t)
-            (python-shell-completion-native-output-timeout
-             python-shell-completion-native-try-output-timeout))
-        (python-shell-completion-native-get-completions
-         (get-buffer-process (current-buffer))
-         nil "_"))))
+    (use-package anaconda-mode
+      :ensure t
+      :init
+      (add-hook 'python-mode-hook 'anaconda-mode)
+      (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
 #+END_SRC
 * Haskell
 Configure Haskell.
