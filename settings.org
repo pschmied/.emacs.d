@@ -285,7 +285,7 @@ Set some /global/ keybindings and parameters for org-mode.
                            (setq tab-width 2)
                            (ess-toggle-underscore nil)
                            (electric-pair-mode 1)
-                           (local-set-key (kbd "C-right") 'paredit-forward-slurp-sexp)
+                           (local-set-key (kbd "C-<right>") 'paredit-forward-slurp-sexp)
                            (setq electric-pair-inhibit-predicate
                                  `(lambda (c)
                                     (if (char-equal c ?\<)
@@ -531,3 +531,8 @@ Configure Haskell.
 #         "My settings for message composition."
 #         (flyspell-mode)))
 # #+END_SRC
+* Github gists
+#+BEGIN_SRC emacs-lisp
+    (use-package gist
+      :ensure t)
+#+END_SRC
