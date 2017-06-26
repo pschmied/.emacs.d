@@ -25,7 +25,6 @@ Installation of these configuration files is simple. If you're not me,
 * Install packages at startup if needed
 
 #+BEGIN_SRC emacs-lisp
-<<<<<<< HEAD
     ;; Set up the melpa package repository
     (require 'package)
     (setq package-user-dir "~/.emacs.d/elpa/")
@@ -61,50 +60,6 @@ Installation of these configuration files is simple. If you're not me,
     (dolist (p my-packages)
       (when (not (package-installed-p p))
         (package-install p)))
-=======
-  ;; Set up the melpa package repository
-  (require 'package)
-  (setq package-user-dir "~/.emacs.d/elpa/")
-  (add-to-list 'package-archives
-               '("melpa" . "http://melpa.org/packages/") t)
-  (add-to-list 'package-archives
-               '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-
-  (package-initialize)
-  (when (not package-archive-contents)
-    (package-refresh-contents))
-
-  ;; packages to install
-  (defvar my-packages '(use-package
-                        exec-path-from-shell
-                        better-defaults
-                        ido-ubiquitous
-                        smex
-                        paredit
-                        ess
-                        graphviz-dot-mode
-                        auctex-latexmk
-                        tangotango-theme
-                        auto-complete
-                        markdown-mode
-                        markdown-mode+
-                        auctex
-                        racket-mode
-                        haskell-mode
-                        ghc
-                        ghci-completion
-                        cider
-                        scion
-                        pandoc-mode
-                        magit
-                        sx)
-    "A list of packages to ensure are installed at launch.")
-
-  ;; Iterate list of packages and install
-  (dolist (p my-packages)
-    (when (not (package-installed-p p))
-      (package-install p)))
->>>>>>> 4e2b8a19df89e3a62eab9db38d9eb75cde56bde7
 #+END_SRC
 
 * Path fix
@@ -148,15 +103,11 @@ before installing).
 
 #+BEGIN_SRC emacs-lisp
 ;; Default font
-<<<<<<< HEAD
 (set-face-attribute 'default nil :family "Terminus" :height 110)
-=======
-(set-face-attribute 'default nil :family "Terminus" :height 120)
 #+END_SRC
 ** Focus follows mouse
 #+BEGIN_SRC emacs-lisp
   (setq mouse-autoselect-window t)
->>>>>>> 4e2b8a19df89e3a62eab9db38d9eb75cde56bde7
 #+END_SRC
 ** Default window size
 I tend to use a tiling window manager these days, so this is less
@@ -401,8 +352,7 @@ Configure Haskell.
 * Scala
 #+BEGIN_SRC emacs-lisp
   (use-package ensime
-               :ensure t
-               :pin melpa-stable)
+               :ensure t)
 
 #+END_SRC
 * Emacs lisp
@@ -529,7 +479,7 @@ Configure Haskell.
 #         "My settings for message composition."
 #         (flyspell-mode)))
 # #+END_SRC
-<<<<<<< HEAD
+
 * Github gists
 #+BEGIN_SRC emacs-lisp
     (use-package gist
