@@ -276,21 +276,23 @@ Set some /global/ keybindings and parameters for org-mode.
 
 * ESS - Emacs Speaks Statistics (R, Julia)
 #+BEGIN_SRC emacs-lisp
-  (use-package ess
-               :ensure t
-               :init
-               (require 'ess-site)
-               (add-hook 'ess-mode-hook
-                         (lambda ()
-                           (setq tab-width 2)
-                           (ess-toggle-underscore nil)
-                           (electric-pair-mode 1)
-                           (local-set-key (kbd "C-<right>") 'paredit-forward-slurp-sexp)
-                           (setq electric-pair-inhibit-predicate
-                                 `(lambda (c)
-                                    (if (char-equal c ?\<)
-                                        t
-                                      (,electric-pair-inhibit-predicate c)))))))
+    (use-package ess
+                 :ensure t
+                 :init
+                 (require 'ess-site)
+                 (add-hook 'ess-mode-hook
+                           (lambda ()
+                             (ess-set-style 'RStudio)
+                             (setq ess-offset-arguments 'prev-line)
+                             (setq tab-width 2)
+                             (ess-toggle-underscore nil)
+                             (electric-pair-mode 1)
+                             (local-set-key (kbd "C-<right>") 'paredit-forward-slurp-sexp)
+                             (setq electric-pair-inhibit-predicate
+                                   `(lambda (c)
+                                      (if (char-equal c ?\<)
+                                          t
+                                        (,electric-pair-inhibit-predicate c)))))))
 
 
 #+END_SRC
