@@ -280,7 +280,7 @@ way of doing things.
 
 ** Racket
 #+BEGIN_SRC emacs-lisp
-  (use-package racket
+  (use-package racket-mode
     :ensure t
     :init
     (add-hook 'racket-mode-hook (lambda () (paredit-mode 1))))
