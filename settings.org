@@ -80,8 +80,10 @@ get this via homebrew cask (don't forget to ~brew tap caskroom/fonts~
 before installing). On Ubuntu =Terminus= is easy and good.
 
 #+BEGIN_SRC emacs-lisp
-;; Default font
-(set-face-attribute 'default nil :family "Terminus" :height 110)
+  ;; Default font
+  (if (equal (system-name) "smallsly")
+      (set-face-attribute 'default nil :family "Terminus" :height 210) ; MBP is retina
+      (set-face-attribute 'default nil :family "Terminus" :height 110))
 #+END_SRC
 ** Focus follows mouse
 #+BEGIN_SRC emacs-lisp
