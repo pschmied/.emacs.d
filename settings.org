@@ -238,7 +238,6 @@ Set some /global/ keybindings and parameters for org-mode.
     (use-package ess
                  :ensure t
                  :init
-                 (require 'ess-site)
                  (add-hook 'ess-mode-hook
                            (lambda ()
                              (ess-set-style 'RStudio)
