@@ -235,22 +235,22 @@ Set some /global/ keybindings and parameters for org-mode.
 * Languages
 ** ESS - Emacs Speaks Statistics (R, Julia)
 #+BEGIN_SRC emacs-lisp
-    (use-package ess
-                 :ensure t
-                 :init
-                 (add-hook 'ess-mode-hook
-                           (lambda ()
-                             (ess-set-style 'RStudio)
-                             (setq ess-offset-arguments 'prev-line)
-                             (setq tab-width 2)
-                             (ess-toggle-underscore nil)
-                             (electric-pair-mode 1)
-                             (local-set-key (kbd "C-<right>") 'paredit-forward-slurp-sexp)
-                             (setq electric-pair-inhibit-predicate
-                                   `(lambda (c)
-                                      (if (char-equal c ?\<)
-                                          t
-                                        (,electric-pair-inhibit-predicate c)))))))
+  (use-package ess
+               :ensure t
+               :bind
+               (("C-<right>" . paredit-forward-slurp-sexpr))
+               :init
+               (setq ess-offset-arguments 'prev-line)
+               (setq tab-width 2)
+               (setq ess-smart-S-assign-key "<")
+               (electric-pair-mode 1)
+               (setq electric-pair-inhibit-predicate
+                     `(lambda (c)
+                        (if (char-equal c ?\<)
+                            t
+                          (,electric-pair-inhibit-predicate c))))
+               :config
+               (ess-set-style 'RStudio))
 
 
 #+END_SRC
@@ -303,6 +303,21 @@ way of doing things.
 (add-hook 'LaTeX-mode-hook '(lambda () (setq compile-command "latexmk -pdf")))
 #+END_SRC
 
+** Javascript
+#+BEGIN_SRC emacs-lisp
+  (use-package nodejs-repl
+    :ensure t
+    :bind (("C-c C-c" . nodejs-repl-send-region))
+    :init
+    (setq nodejs-repl-command "nodejs"))
+
+#+END_SRC
+
+** Elixir
+#+BEGIN_SRC emacs-lisp
+  (use-package alchemist
+    :ensure t)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
