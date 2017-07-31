@@ -241,7 +241,6 @@ Set some /global/ keybindings and parameters for org-mode.
                (("C-<right>" . paredit-forward-slurp-sexp)
                 ("C-<left>" . paredit-forward-barf-sexp))
                :init
-               (require 'ess-site)
                (setq ess-default-style 'RStudio-)
                (setq ess-smart-S-assign-key "<")
                (electric-pair-mode 1)
