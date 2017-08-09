@@ -316,6 +316,12 @@ way of doing things.
   (use-package alchemist
     :ensure t)
 #+END_SRC
+** Dockerfile
+Dockerfiles are sort of a language, I guess.
+#+BEGIN_SRC emacs-lisp
+  (use-package dockerfile-mode
+    :ensure t)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
