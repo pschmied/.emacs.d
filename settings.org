@@ -313,8 +313,16 @@ way of doing things.
 
 ** Elixir
 #+BEGIN_SRC emacs-lisp
+  (defun alchemist-iex-mark-and-send-region ()
+    (interactive)
+    (mark-paragraph)
+    (alchemist-iex-send-region (point) (mark))
+    (set-mark-command (point))
+    (forward-paragraph))
+
   (use-package alchemist
-    :ensure t)
+    :ensure t
+    :bind (("C-c C-c" . alchemist-iex-mark-and-send-region)))
 #+END_SRC
 ** Dockerfile
 Dockerfiles are sort of a language, I guess.
