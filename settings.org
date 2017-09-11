@@ -197,6 +197,21 @@ Set some /global/ keybindings and parameters for org-mode.
   (global-set-key "\C-cb" 'org-iswitchb)
 #+END_SRC
 
+** Bullets
+Makes headings look more attractive
+#+BEGIN_SRC emacs-lisp
+    (use-package org-bullets
+      :ensure t
+      :config
+      (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+
+** Fancy TODOs
+#+BEGIN_SRC emacs-lisp
+  (setq org-todo-keywords '((sequence "☛ TODO(t)" "|"  "✔ DONE(d)")
+  (sequence "⚑ WAITING(w)" "|")
+  (sequence "|" "✘ CANCELED(c)")))
+#+END_SRC
 ** Babel config
 #+BEGIN_SRC emacs-lisp
     ;; active Org Babel languages
