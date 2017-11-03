@@ -345,6 +345,12 @@ Dockerfiles are sort of a language, I guess.
   (use-package dockerfile-mode
     :ensure t)
 #+END_SRC
+** Restclient
+Also a sort-of-a-language language
+#+BEGIN_SRC emacs-lisp
+  (use-package ob-restclient
+    :ensure t)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
