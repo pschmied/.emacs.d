@@ -81,7 +81,7 @@ before installing). On Ubuntu =Terminus= is easy and good.
 
 #+BEGIN_SRC emacs-lisp
   ;; Default font
-  (if (or (equal (system-name) "smallsly")
+  (if (or (equal (system-name) "lanai")
           (equal (system-name) "maui"))
       (set-face-attribute 'default nil :family "Terminus" :height 210) ; MBP is retina
       (set-face-attribute 'default nil :family "Terminus" :height 110))
