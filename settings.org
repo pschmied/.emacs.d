@@ -44,10 +44,10 @@ information is stored both in Apple netinfo database as well as in the
 more traditional locations. This makes things sane again.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package exec-path-from-shell
-    :ensure t
-    :config
-    (exec-path-from-shell-initialize))
+  ;;(use-package exec-path-from-shell
+  ;;  :ensure t
+  ;;  :config
+  ;;  (exec-path-from-shell-initialize))
 #+END_SRC
 
 * Aesthetics and behaviors
@@ -222,7 +222,7 @@ Makes headings look more attractive
        (emacs-lisp . t)
        ;; (julia . t)
        (dot . t)
-       (sh . t)
+       ;; (sh . t)
        (latex . t)
        (python . t)
        (sql . t)
